@@ -1,6 +1,22 @@
 #!/bin/bash
 
 #═══════════════════════════════════════════════════════════════════════════════
+#  Création des scripts utilitaires pour PhishGuard
+#  À exécuter dans le répertoire scripts/
+#═══════════════════════════════════════════════════════════════════════════════
+
+# Créer le dossier scripts
+mkdir -p scripts
+cd scripts
+
+#═══════════════════════════════════════════════════════════════════════════════
+# 1. start.sh - Démarrage de l'application
+#═══════════════════════════════════════════════════════════════════════════════
+
+cat > start.sh << 'EOF'
+#!/bin/bash
+
+#═══════════════════════════════════════════════════════════════════════════════
 #  Script de démarrage PhishGuard
 #═══════════════════════════════════════════════════════════════════════════════
 
@@ -33,10 +49,33 @@ fi
 # Vérifier le fichier .env
 if [ ! -f ".env" ]; then
     echo -e "${YELLOW}⚠️  Fichier .env non trouvé${NC}"
-    echo -e "${BLUE}Création depuis .env.example...${NC}"
-    cp .env.example .env
-    echo -e "${GREEN}✅ Fichier .env créé${NC}"
-    echo -e "${YELLOW}⚠️  Pensez à configurer vos variables d'environnement${NC}"
+    echo -e "${BLUE}Création du fichier .env...${NC}"
+    
+    # Générer un mot de passe sécurisé
+    POSTGRES_PASS=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-32 2>/dev/null || echo "changeme_$(date +%s)")
+    
+    # Créer le fichier .env
+    cat > .env << ENV_EOF
+# PhishGuard Configuration
+NODE_ENV=production
+APP_PORT=8080
+FRONTEND_URL=http://localhost:8080
+
+# Database
+POSTGRES_USER=phishguard
+POSTGRES_PASSWORD=${POSTGRES_PASS}
+POSTGRES_DB=phishguard
+DATABASE_URL=postgresql://phishguard:${POSTGRES_PASS}@postgres:5432/phishguard
+
+# Redis
+REDIS_URL=redis://redis:6379
+
+# Note: Les clés API IA sont configurées via l'interface web
+# Ne PAS stocker les clés API ici pour des raisons de sécurité
+ENV_EOF
+    
+    echo -e "${GREEN}✅ Fichier .env créé avec mot de passe sécurisé${NC}"
+    echo -e "${YELLOW}⚠️  Configurez les clés API depuis l'interface web (http://localhost:8080)${NC}"
 fi
 
 # Démarrer les services
@@ -78,3 +117,6 @@ echo -e "   ${GREEN}docker compose ps${NC}              # Voir l'état"
 echo -e "   ${GREEN}docker compose stop${NC}            # Arrêter"
 echo -e "   ${GREEN}docker compose restart${NC}         # Redémarrer"
 echo ""
+EOF
+
+chmod +x start.sh
