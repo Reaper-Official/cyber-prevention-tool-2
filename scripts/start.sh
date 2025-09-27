@@ -1,22 +1,6 @@
 #!/bin/bash
 
 #═══════════════════════════════════════════════════════════════════════════════
-#  Création des scripts utilitaires pour PhishGuard
-#  À exécuter dans le répertoire scripts/
-#═══════════════════════════════════════════════════════════════════════════════
-
-# Créer le dossier scripts
-mkdir -p scripts
-cd scripts
-
-#═══════════════════════════════════════════════════════════════════════════════
-# 1. start.sh - Démarrage de l'application
-#═══════════════════════════════════════════════════════════════════════════════
-
-cat > start.sh << 'EOF'
-#!/bin/bash
-
-#═══════════════════════════════════════════════════════════════════════════════
 #  Script de démarrage PhishGuard
 #═══════════════════════════════════════════════════════════════════════════════
 
@@ -117,6 +101,3 @@ echo -e "   ${GREEN}docker compose ps${NC}              # Voir l'état"
 echo -e "   ${GREEN}docker compose stop${NC}            # Arrêter"
 echo -e "   ${GREEN}docker compose restart${NC}         # Redémarrer"
 echo ""
-EOF
-
-chmod +x start.sh
